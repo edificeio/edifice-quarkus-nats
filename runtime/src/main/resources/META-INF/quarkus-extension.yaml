@@ -1,0 +1,13 @@
+name: Edifice NATS
+description: Serves and calls the NATS contracts of the Edifice services
+artifact: ${project.groupId}:${project.artifactId}:${project.version}
+metadata:
+  keywords:
+    - nats
+    - messaging
+    - edifice
+  categories:
+    - "messaging"
+  status: "stable"
+  config:
+    - "edifice.nats."

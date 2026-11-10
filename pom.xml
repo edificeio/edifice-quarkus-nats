@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.edifice</groupId>
+  <artifactId>edifice-quarkus-nats-parent</artifactId>
+  <version>2.0.0</version>
+  <packaging>pom</packaging>
+  <name>Edifice Quarkus NATS - Parent</name>
+  <description>Quarkus extension serving and calling the NATS contracts of the Edifice services.</description>
+
+  <scm>
+    <connection>scm:git:https://github.com/edificeio/edifice-quarkus-nats.git</connection>
+    <developerConnection>scm:git:https://github.com/edificeio/edifice-quarkus-nats.git</developerConnection>
+    <url>https://github.com/edificeio/edifice-quarkus-nats</url>
+  </scm>
+
+  <modules>
+    <module>api</module>
+    <module>runtime</module>
+    <module>deployment</module>
+    <module>integration-tests</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>25</maven.compiler.release>
+    <quarkus.version>3.36.3</quarkus.version>
+    <jnats.version>2.26.4</jnats.version>
+    <compiler-plugin.version>3.14.1</compiler-plugin.version>
+    <surefire-plugin.version>3.5.4</surefire-plugin.version>
+  </properties>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ode-snapshots</id>
+      <name>ODE Snapshots</name>
+      <url>https://maven.opendigitaleducation.com/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>ode-releases</id>
+      <name>ODE Releases</name>
+      <url>https://maven.opendigitaleducation.com/nexus/content/repositories/releases/</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>${quarkus.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.nats</groupId>
+        <artifactId>jnats</artifactId>
+        <version>${jnats.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.edifice</groupId>
+        <artifactId>edifice-quarkus-nats-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.edifice</groupId>
+        <artifactId>edifice-quarkus-nats</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.edifice</groupId>
+        <artifactId>edifice-quarkus-nats-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${compiler-plugin.version}</version>
+          <configuration>
+            <parameters>true</parameters>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire-plugin.version}</version>
+          <configuration>
+            <systemPropertyVariables>
+              <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+              <maven.home>${maven.home}</maven.home>
+            </systemPropertyVariables>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-extension-maven-plugin</artifactId>
+          <version>${quarkus.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

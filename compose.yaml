@@ -1,0 +1,18 @@
+services:
+  maven:
+    image: maven:3.9-eclipse-temurin-25
+    user: "$DEFAULT_DOCKER_USER"
+    # The dev services of the integration tests start NATS through the Docker socket of the host. The host network
+    # lets the tests reach the ports Testcontainers maps on localhost.
+    group_add:
+      - "${DOCKER_GID:-0}"
+    network_mode: host
+    working_dir: /usr/src/maven
+    volumes:
+      - ./:/usr/src/maven
+      - ~/.m2:/var/maven/.m2
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      MAVEN_CONFIG: /var/maven/.m2
+      HOME: /var/maven
+      TESTCONTAINERS_RYUK_DISABLED: "${TESTCONTAINERS_RYUK_DISABLED:-false}"

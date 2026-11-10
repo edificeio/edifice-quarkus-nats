@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.edifice</groupId>
+    <artifactId>edifice-quarkus-nats-parent</artifactId>
+    <version>2.0.0</version>
+  </parent>
+
+  <artifactId>edifice-quarkus-nats</artifactId>
+  <name>Edifice Quarkus NATS - Runtime</name>
+  <description>NATS connection and @BrokerListener dispatch for the Edifice services.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.edifice</groupId>
+      <artifactId>edifice-quarkus-nats-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.nats</groupId>
+      <artifactId>jnats</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-tls-registry</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-virtual-threads</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-devservices</artifactId>
+    </dependency>
+    <!-- The readiness check is only registered when the application brings quarkus-smallrye-health itself. -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-health</artifactId>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-extension-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>extension-descriptor</goal>
+            </goals>
+            <configuration>
+              <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
+              <capabilities>
+                <provides>io.edifice.nats</provides>
+              </capabilities>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.quarkus</groupId>
+              <artifactId>quarkus-extension-processor</artifactId>
+              <version>${quarkus.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
