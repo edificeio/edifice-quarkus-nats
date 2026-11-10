@@ -53,6 +53,10 @@ public class TestServiceNatsServicePublisher {
     doPublish("it.count", request);
   }
 
+  public void broadcastEvent(EchoRequest request) {
+    doPublish("it.broadcast", request);
+  }
+
   private void doPublish(final String subject, final Object request) {
     try {
       this.connection.publish(subject, this.objectMapper.writeValueAsBytes(request));

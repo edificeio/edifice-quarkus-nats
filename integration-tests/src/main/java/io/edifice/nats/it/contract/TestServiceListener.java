@@ -27,4 +27,7 @@ public interface TestServiceListener {
 
   @BrokerListener(subject = "it.count", description = "Counts the messages received.")
   void count(EchoRequest request);
+
+  @BrokerListener(subject = "it.broadcast", description = "Counts the messages, on every instance.", broadcast = true)
+  void broadcastEvent(EchoRequest request);
 }

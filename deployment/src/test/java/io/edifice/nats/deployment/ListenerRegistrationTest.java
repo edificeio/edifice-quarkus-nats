@@ -50,13 +50,15 @@ class ListenerRegistrationTest {
     final NatsListenerDefinition notify = listeners.stream()
       .filter(l -> l.subject().template().equals("test.notify.>")).findFirst().orElseThrow();
     assertFalse(notify.replies());
+    assertTrue(notify.broadcast());
+    assertFalse(get.broadcast());
   }
 
   public interface Listener {
     @BrokerListener(subject = "test.users.{userId}.get", description = "Gets a user")
     Response get(Request request);
 
-    @BrokerListener(subject = "test.notify.>")
+    @BrokerListener(subject = "test.notify.>", broadcast = true)
     void notifyAll(Request request);
   }
 

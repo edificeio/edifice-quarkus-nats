@@ -180,6 +180,37 @@ class NatsListenerTest {
   }
 
   @Test
+  void broadcastListenerReceivesEveryMessage() throws Exception {
+    // Another instance of the service: same queue group, subscribed on both subjects.
+    final AtomicInteger otherBroadcast = new AtomicInteger();
+    final AtomicInteger otherCount = new AtomicInteger();
+    final var dispatcher = connection.createDispatcher();
+    dispatcher.subscribe("it.broadcast", message -> otherBroadcast.incrementAndGet());
+    dispatcher.subscribe("it.count", queueGroup, message -> otherCount.incrementAndGet());
+    try {
+      connection.flush(TIMEOUT);
+      final int broadcastedBefore = recorded.broadcasted.get();
+      final int countedBefore = recorded.counted.get();
+      final int messages = 40;
+      for (int i = 0; i < messages; i++) {
+        client.broadcastEvent(new EchoRequest(String.valueOf(i)));
+        client.count(new EchoRequest(String.valueOf(i)));
+      }
+      // Broadcast: both instances receive every message.
+      await().atMost(TIMEOUT).until(() -> recorded.broadcasted.get() - broadcastedBefore == messages
+        && otherBroadcast.get() == messages);
+      // Not broadcast: each message is handled once by the group.
+      await().atMost(TIMEOUT).until(() -> recorded.counted.get() - countedBefore + otherCount.get() == messages);
+      Thread.sleep(200);
+      assertEquals(messages, recorded.broadcasted.get() - broadcastedBefore);
+      assertEquals(messages, recorded.counted.get() - countedBefore + otherCount.get());
+      assertTrue(otherCount.get() < messages, "the queue group still shares the other subjects");
+    } finally {
+      connection.closeDispatcher(dispatcher);
+    }
+  }
+
+  @Test
   void readinessReportsTheConnection() {
     given().when().get("/q/health/ready").then()
       .statusCode(200)

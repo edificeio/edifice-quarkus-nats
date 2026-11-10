@@ -82,6 +82,8 @@ Calling a contract means injecting its generated client, `XxxNatsServicePublishe
   subject, headers and subject parameters. The listener signatures stay those of the generated interfaces.
 - **Queue group, read at runtime.** Every instance of a service subscribes in the queue group
   `edifice.nats.queue-group`, the application name by default, so that each message is handled once.
+- **Broadcast listeners.** `@BrokerListener(broadcast = true)` subscribes that method without a queue group: every
+  instance receives every message, for example to clear a local cache. The other methods keep the queue group.
 - **Readiness check** `nats-connection`, registered when the application has `quarkus-smallrye-health`.
 - **Dev service.** In dev and test modes, without `edifice.nats.url`, a NATS container is started and
   `edifice.nats.url` points to it. In dev mode it is shared between the applications through the label
@@ -136,6 +138,10 @@ When the message has a reply subject and the method does not return `void`, the 
 
 A `void` method never replies, even to a request: its endpoint is fire-and-forget.
 
+Delivery: a listener receives each message once per service, in the queue group `edifice.nats.queue-group`. A
+listener with `broadcast = true` is subscribed without queue group and receives each message on every instance; if it
+replies, the caller gets the first answer.
+
 The generated clients read the reply the same way: `err` becomes a `RuntimeException` with its message, `response`
 is read as the response type, and a reply without either envelope is read as the response itself.
 
@@ -148,6 +154,7 @@ is read as the response type, and a reply without either envelope is read as the
 | `io.nats.client.*` properties | `edifice.nats.*`, see the table above. Options without an equivalent go in `edifice.nats.options.*`. |
 | `nats.connection.queue`, read at build time | `edifice.nats.queue-group`, read at runtime, the application name by default |
 | `@Unremovable` / `@ApplicationScoped` on the listener class | Not needed |
+| Empty queue group to have every instance receive a subject | `broadcast = true` on that listener only, from the `broadcast` option of the contract |
 | One dispatcher thread for every listener | One virtual thread per message |
 | Reply: the bare response, or `{"errorMsg", "detailedMsg"}` | `{"response": ...}` or `{"err": "..."}`, with the header `failed` |
 | `nats.json`, the annotation processor, the schema utils, the Temporal modules | Removed |
@@ -183,4 +190,4 @@ Modules:
   cover the build failures with `QuarkusExtensionTest`.
 - `integration-tests`: an application with a hand-written listener interface and client shaped like the generated
   ones, tested with `@QuarkusTest` on the dev service: request/reply, fire-and-forget, subject parameters and headers,
-  errors, queue group, request scope, concurrency, health, and startup without NATS.
+  errors, queue group, broadcast, request scope, concurrency, health, and startup without NATS.

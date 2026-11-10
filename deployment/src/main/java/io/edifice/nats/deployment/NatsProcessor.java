@@ -109,8 +109,10 @@ public class NatsProcessor {
       final List<DotName> implementors = concreteImplementors(index, method.declaringClass());
       beanClasses.addAll(implementors);
       final var description = annotation.value("description");
+      final var broadcast = annotation.value("broadcast");
       methods.produce(new ListenerMethodBuildItem(method, annotation.value("subject").asString(),
-        description == null ? "" : description.asString(), implementors));
+        description == null ? "" : description.asString(), implementors,
+        broadcast != null && broadcast.asBoolean()));
     }
     if (beanClasses.isEmpty()) {
       return;
@@ -214,7 +216,7 @@ public class NatsProcessor {
       final boolean replies = method.returnType().kind() != Type.Kind.VOID;
       final String targetName = implementor + "#" + method.name();
       listeners.produce(new NatsListenerBuildItem(item.subject(), item.description(), targetName,
-        requestType.name().toString(), replies, className(invoker.getClassDesc())));
+        requestType.name().toString(), replies, className(invoker.getClassDesc()), item.broadcast()));
       reflectiveHierarchy.produce(ReflectiveHierarchyBuildItem.builder(requestType)
         .source(getClass().getSimpleName() + " > " + targetName).build());
       if (replies) {
@@ -261,7 +263,8 @@ public class NatsProcessor {
     for (NatsListenerBuildItem listener : listeners) {
       final RuntimeValue<Invoker<Object, Object>> invoker = recorderContext.newInstance(listener.invokerClass());
       recorder.addListener(listener.subject(), listener.description(), listener.target(),
-        Class.forName(listener.requestType(), false, classLoader), listener.replies(), invoker);
+        Class.forName(listener.requestType(), false, classLoader), listener.replies(), listener.broadcast(),
+        invoker);
     }
     recorder.startListeners();
   }

@@ -13,15 +13,17 @@ public final class NatsListenerBuildItem extends MultiBuildItem {
   private final String requestType;
   private final boolean replies;
   private final String invokerClass;
+  private final boolean broadcast;
 
   NatsListenerBuildItem(String subject, String description, String target, String requestType, boolean replies,
-                        String invokerClass) {
+                        String invokerClass, boolean broadcast) {
     this.subject = subject;
     this.description = description;
     this.target = target;
     this.requestType = requestType;
     this.replies = replies;
     this.invokerClass = invokerClass;
+    this.broadcast = broadcast;
   }
 
   public String subject() {
@@ -46,5 +48,9 @@ public final class NatsListenerBuildItem extends MultiBuildItem {
 
   public String invokerClass() {
     return invokerClass;
+  }
+
+  public boolean broadcast() {
+    return broadcast;
   }
 }

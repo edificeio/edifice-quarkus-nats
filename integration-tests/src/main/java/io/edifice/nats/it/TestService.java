@@ -76,4 +76,9 @@ public class TestService implements TestServiceListener {
   public void count(EchoRequest request) {
     recorded.counted.incrementAndGet();
   }
+
+  @Override
+  public void broadcastEvent(EchoRequest request) {
+    recorded.broadcasted.incrementAndGet();
+  }
 }

@@ -38,4 +38,15 @@ public @interface BrokerListener {
    * @return a one-line description
    */
   String description() default "";
+
+  /**
+   * Whether every instance of the service receives the message.
+   * <p>
+   * When {@code true}, the subscription is made without a queue group, so that each instance handles each message,
+   * for example to clear a local cache. When {@code false}, the instances share the messages in the queue group
+   * {@code edifice.nats.queue-group}, so that each message is handled once.
+   *
+   * @return whether the subject is listened to without a queue group
+   */
+  boolean broadcast() default false;
 }

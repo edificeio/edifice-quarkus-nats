@@ -15,12 +15,15 @@ public final class ListenerMethodBuildItem extends MultiBuildItem {
   private final String subject;
   private final String description;
   private final List<DotName> implementors;
+  private final boolean broadcast;
 
-  ListenerMethodBuildItem(MethodInfo method, String subject, String description, List<DotName> implementors) {
+  ListenerMethodBuildItem(MethodInfo method, String subject, String description, List<DotName> implementors,
+                          boolean broadcast) {
     this.method = method;
     this.subject = subject;
     this.description = description;
     this.implementors = List.copyOf(implementors);
+    this.broadcast = broadcast;
   }
 
   public MethodInfo method() {
@@ -37,6 +40,10 @@ public final class ListenerMethodBuildItem extends MultiBuildItem {
 
   public List<DotName> implementors() {
     return implementors;
+  }
+
+  public boolean broadcast() {
+    return broadcast;
   }
 
   /**

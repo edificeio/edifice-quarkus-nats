@@ -15,6 +15,7 @@ public class Recorded {
 
   public final List<String> events = new CopyOnWriteArrayList<>();
   public final AtomicInteger counted = new AtomicInteger();
+  public final AtomicInteger broadcasted = new AtomicInteger();
   public final AtomicInteger blocked = new AtomicInteger();
   public final AtomicInteger unblocked = new AtomicInteger();
   public volatile CountDownLatch release = new CountDownLatch(1);

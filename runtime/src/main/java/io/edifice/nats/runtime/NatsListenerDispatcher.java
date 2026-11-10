@@ -87,14 +87,16 @@ public class NatsListenerDispatcher {
     for (NatsListenerDefinition listener : listeners) {
       final Dispatcher dispatcher = connection.createDispatcher();
       final String wildcard = listener.subject().wildcard();
-      if (queueGroup == null) {
+      final String queue = listener.broadcast() ? null : queueGroup;
+      if (queue == null) {
         dispatcher.subscribe(wildcard, message -> handOff(executor, listener, message));
       } else {
-        dispatcher.subscribe(wildcard, queueGroup, message -> handOff(executor, listener, message));
+        dispatcher.subscribe(wildcard, queue, message -> handOff(executor, listener, message));
       }
       dispatchers.add(dispatcher);
       LOG.infof("Listening to NATS subject %s%s with %s", wildcard,
-        queueGroup == null ? "" : " (queue group " + queueGroup + ")", listener.target());
+        queue == null ? (listener.broadcast() ? " (broadcast)" : "") : " (queue group " + queue + ")",
+        listener.target());
     }
   }
 
